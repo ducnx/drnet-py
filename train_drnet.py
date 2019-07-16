@@ -9,7 +9,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 import utils
 import itertools
-import progressbar
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', default=0.002, type=float, help='learning rate')
@@ -264,9 +264,9 @@ for epoch in range(opt.niter):
     netC.train()
     epoch_sim_loss, epoch_rec_loss, epoch_sd_loss, epoch_sd_acc = 0, 0, 0, 0
 
-    progress = progressbar.ProgressBar(max_value=opt.epoch_size).start()
+    progress = tqdm(total=opt.epoch_size)
     for i in range(opt.epoch_size):
-        progress.update(i+1)
+        progress.update()
         x = next(training_batch_generator)
 
         # train scene discriminator
@@ -281,7 +281,6 @@ for epoch in range(opt.niter):
 
 
     progress.finish()
-    utils.clear_progressbar()
 
     netEP.eval()
     netEC.eval()
