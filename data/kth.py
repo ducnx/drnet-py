@@ -39,15 +39,15 @@ class KTH(object):
             c = self.classes[c_idx]
             vid_idx = np.random.randint(len(self.data[c]))
             vid = self.data[c][vid_idx]
-            seq_idx = np.random.randint(len(vid['files']))
-            if len(vid['files'][seq_idx]) - t >= 0:
+            seq_idx = np.random.randint(len(vid[b'files']))
+            if len(vid[b'files'][seq_idx]) - t >= 0:
                 break
-        dname = '%s/%s/%s' % (self.data_root, c, vid['vid'])
-        st = random.randint(0, len(vid['files'][seq_idx])-t)
+        dname = '%s/%s/%s' % (self.data_root, c, vid[b'vid'])
+        st = random.randint(0, len(vid[b'files'][seq_idx])-t)
 
         seq = []
         for i in range(st, st+t):
-            fname = '%s/%s' % (dname, vid['files'][seq_idx][i])
+            fname = '%s/%s' % (dname, vid[b'files'][seq_idx][i])
             im = misc.imread(fname)/255.
             seq.append(im)
         return np.array(seq)
@@ -59,14 +59,14 @@ class KTH(object):
         c = self.classes[c_idx]
         vid_idx = np.random.randint(len(self.data[c]))
         vid = self.data[c][vid_idx]
-        seq_idx = np.random.randint(len(vid['files']))
-        dname = '%s/%s/%s' % (self.data_root, c, vid['vid'])
-        seq_len = len(vid['files'][seq_idx])
+        seq_idx = np.random.randint(len(vid[b'files']))
+        dname = '%s/%s/%s' % (self.data_root, c, vid[b'vid'])
+        seq_len = len(vid[b'files'][seq_idx])
 
         seq = []
         for i in range(4):
             t = np.random.randint(seq_len)
-            fname = '%s/%s' % (dname, vid['files'][seq_idx][t])
+            fname = '%s/%s' % (dname, vid[b'files'][seq_idx][t])
             im = misc.imread(fname)/255.
             seq.append(im)
         return np.array(seq)
