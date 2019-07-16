@@ -280,7 +280,7 @@ for epoch in range(opt.niter):
         epoch_rec_loss += rec_loss
 
 
-    progress.finish()
+    # progress.finish()
 
     netEP.eval()
     netEC.eval()

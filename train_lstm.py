@@ -8,7 +8,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 import utils
 import itertools
-import progressbar
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', default=0.0002, type=float, help='learning rate')
@@ -221,7 +221,7 @@ def train(x):
 for epoch in range(opt.niter):
     lstm.train()
     epoch_loss = 0
-    progress = progressbar.ProgressBar(max_value=opt.epoch_size).start()
+    progress = tqdm(total=opt.epoch_size)
     for i in range(opt.epoch_size):
         progress.update(i+1)
         x = next(training_batch_generator)
@@ -229,10 +229,10 @@ for epoch in range(opt.niter):
         # train lstm 
         loss = train(x)
         epoch_loss += loss
+ 
 
-
-    progress.finish()
-    utils.clear_progressbar()
+    # progress.finish()
+    # utils.clear_progressbar()
 
     lstm.eval()
     # plot some stuff

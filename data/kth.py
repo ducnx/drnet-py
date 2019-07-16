@@ -27,7 +27,7 @@ class KTH(object):
             data_type = 'test'
 
         self.data = {}
-        for c in self.classes:            
+        for c in self.classes:
             self.data[c] = torchfile.load(f'{self.data_root}/{c}/{data_type}_meta{image_size}x{image_size}.t7')
 
         self.seed_set = False
