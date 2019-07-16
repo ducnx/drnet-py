@@ -1,3 +1,6 @@
 __pycache__
 */__pycache__
 logs
+data/kth/
+data/suncg/
+.idea/
