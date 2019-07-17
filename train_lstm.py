@@ -224,7 +224,7 @@ def train(x):
     for i in range(1, opt.n_past + opt.n_future):
         pose_pred = lstm(torch.cat([h_p[i - 1], h_c], 1))
         # if i >= opt.n_past:
-        mse += mse_criterion(pose_pred.view(-1, 1, 1), h_p[i])
+        mse += mse_criterion(pose_pred.view(-1, -1, 1, 1), h_p[i])
     mse.backward()
 
     optimizer.step()
