@@ -34,7 +34,7 @@ parser.add_argument('--device', dest='device', default='cpu', help='choose devic
 
 opt = parser.parse_args()
 name = 'rnn_size=%d-rnn_layers=%d-n_past=%d-n_future=%d-lr=%.4f-normalize=%s' % (
-opt.rnn_size, opt.rnn_layers, opt.n_past, opt.n_future, opt.lr, opt.normalize)
+    opt.rnn_size, opt.rnn_layers, opt.n_past, opt.n_future, opt.lr, opt.normalize)
 opt.log_dir = f'{opt.model_path}/lstm/{name}/'
 
 os.makedirs('%s/gen/' % opt.log_dir, exist_ok=True)
@@ -138,8 +138,10 @@ def plot_gen(x, epoch):
     # get fixed content vector from last ground truth frame
     h_c = netEC(x[opt.n_past - 1])
     if type(h_c) is tuple:
+        h_c[0] = h_c[0].squeeze()
         vec_h_c = h_c[0].detach()
     else:
+        h_c = h_c.squeeze()
         vec_h_c = h_c.detach()
 
     lstm.hidden = lstm.init_hidden()
@@ -224,7 +226,7 @@ def train(x):
     for i in range(1, opt.n_past + opt.n_future):
         pose_pred = lstm(torch.cat([h_p[i - 1], h_c], 1))
         # if i >= opt.n_past:
-        mse += mse_criterion(pose_pred, h_p[i])
+        mse += mse_criterion(pose_pred, h_p[i].squeeze())
     mse.backward()
 
     optimizer.step()
