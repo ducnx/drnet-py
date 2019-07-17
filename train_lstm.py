@@ -138,20 +138,18 @@ def plot_gen(x, epoch):
     # get fixed content vector from last ground truth frame
     h_c = netEC(x[opt.n_past - 1])
     if type(h_c) is tuple:
-        h_c = h_c[0].squeeze(), h_c[1]
         vec_h_c = h_c[0].detach()
     else:
-        h_c = h_c.squeeze()
         vec_h_c = h_c.detach()
-
+    vec_h_c = vec_h_c.view(-1, 1, 1)
     lstm.hidden = lstm.init_hidden()
     gen_seq = []
-    h_p = netEP(x[0]).detach().squeeze()
+    h_p = netEP(x[0]).detach()
     gen_seq.append(x[0])
     for i in range(1, opt.n_past + opt.n_future):
         if i < opt.n_past:
             lstm(torch.cat([h_p, vec_h_c], 1))
-            h_p = netEP(x[i]).detach().squeeze()
+            h_p = netEP(x[i]).detach()
             gen_seq.append(x[i])
         else:
             h_p = lstm(torch.cat([h_p, vec_h_c], 1))
@@ -226,7 +224,7 @@ def train(x):
     for i in range(1, opt.n_past + opt.n_future):
         pose_pred = lstm(torch.cat([h_p[i - 1], h_c], 1))
         # if i >= opt.n_past:
-        mse += mse_criterion(pose_pred, h_p[i].squeeze())
+        mse += mse_criterion(pose_pred.view(-1, 1, 1), h_p[i])
     mse.backward()
 
     optimizer.step()
