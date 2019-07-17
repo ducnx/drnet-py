@@ -34,6 +34,7 @@ parser.add_argument('--pose_model', default='dcgan', help='model type (dcgan | u
 parser.add_argument('--data_threads', type=int, default=5, help='number of parallel data loading threads')
 parser.add_argument('--normalize', action='store_true', help='if true, normalize pose vector')
 parser.add_argument('--data_type', default='drnet', help='speed up data loading for drnet training')
+parser.add_argument('--device', dest='device', default='cpu', help='choose device to run')
 
 opt = parser.parse_args()
 name = 'content_model=%s-pose_model=%s-content_dim=%d-pose_dim=%d-max_step=%d-sd_weight=%.3f-lr=%.3f-sd_nf=%d-normalize=%s' % (
@@ -49,10 +50,11 @@ print(opt)
 print("Random Seed: ", opt.seed)
 random.seed(opt.seed)
 torch.manual_seed(opt.seed)
-# TODO: comment when run on PC
-# torch.cuda.manual_seed_all(opt.seed)
-# dtype = torch.cuda.FloatTensor
-dtype = torch.FloatTensor
+if opt.device == 'cpu':
+    dtype = torch.FloatTensor
+else:
+    torch.cuda.manual_seed_all(opt.seed)
+    dtype = torch.cuda.FloatTensor
 
 if opt.image_width == 64:
     import models.resnet_64 as resnet_models
@@ -113,13 +115,13 @@ mse_criterion = nn.MSELoss()
 bce_criterion = nn.BCELoss()
 
 # --------- transfer to gpu ------------------------------------
-# TODO: comment when run on PC
-# netEP.cuda()
-# netEC.cuda()
-# netD.cuda()
-# netC.cuda()
-# mse_criterion.cuda()
-# bce_criterion.cuda()
+if opt.device != 'cpu':
+    netEP.cuda()
+    netEC.cuda()
+    netD.cuda()
+    netC.cuda()
+    mse_criterion.cuda()
+    bce_criterion.cuda()
 
 # --------- load a dataset ------------------------------------
 train_data, test_data = utils.load_dataset(opt)
@@ -229,8 +231,11 @@ def train(x):
     rec_loss = mse_criterion(rec, x_p1)
 
     # scene discriminator loss: maximize entropy of output
-    # target = torch.cuda.FloatTensor(opt.batch_size, 1).fill_(0.5)  # TODO: comment for PC running
-    target = torch.FloatTensor(opt.batch_size, 1).fill_(0.5)
+    if opt.device == 'cpu':
+        target = torch.FloatTensor(opt.batch_size, 1).fill_(0.5)
+    else:
+        target = torch.cuda.FloatTensor(opt.batch_size, 1).fill_(0.5)
+
     out = netC([h_p1, h_p2])
     sd_loss = bce_criterion(out, Variable(target))
 
@@ -247,17 +252,22 @@ def train(x):
 
 def train_scene_discriminator(x):
     netC.zero_grad()
+    if opt.device == 'cpu':
+        target = torch.FloatTensor(opt.batch_size, 1)
+    else:
+        target = torch.cuda.FloatTensor(opt.batch_size, 1)
 
-    # target = torch.cuda.FloatTensor(opt.batch_size, 1)  # TODO: comment for PC running
-    target = torch.FloatTensor(opt.batch_size, 1)
     x1 = x[0]
     x2 = x[1]
     h_p1 = netEP(x1).detach()
     h_p2 = netEP(x2).detach()
 
     half = int(opt.batch_size / 2)
-    # rp = torch.randperm(half).cuda()  # TODO: comment for PC running
-    rp = torch.randperm(half)
+    if opt.device == 'cpu':
+        rp = torch.randperm(half)
+    else:
+        rp = torch.randperm(half).cuda()
+
     h_p2[:half] = h_p2[rp]
     target[:half] = 1
     target[half:] = 0
