@@ -3,6 +3,7 @@ __pycache__
 logs
 data/KTH/
 data/suncg/
+data/MNIST/
 .idea/
 *.pyc
 .vscode/
