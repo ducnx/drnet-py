@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 python train_drnet.py --batch_size 10 \
                       --data_root ./data/ \
                       --niter 10 \
