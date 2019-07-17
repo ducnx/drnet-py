@@ -152,7 +152,7 @@ def plot_gen(x, epoch):
             gen_seq.append(x[i])
         else:
             h_p = lstm(torch.cat([h_p, vec_h_c], 1))
-            while len(h_p.size()) < len(h_c.size()):
+            while len(h_p.size()) < len(vec_h_c.size()):
                 h_p = h_p.unsqueeze(-1)
             pred_x = netD([h_c, h_p]).detach()
             gen_seq.append(pred_x)
@@ -181,7 +181,7 @@ def plot_rec(x, epoch):
     for i in range(1, opt.n_past + opt.n_future):
         h_p = netEP(x[i - 1]).detach()
         h_pred = lstm(torch.cat([h_p, vec_h_c], 1))
-        while len(h_pred.size()) < len(h_c.size()):
+        while len(h_pred.size()) < len(vec_h_c.size()):
             h_pred = h_pred.unsqueeze(-1)
         if i < opt.n_past:
             gen_seq.append(x[i])
