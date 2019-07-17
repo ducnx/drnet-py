@@ -37,13 +37,19 @@ parser.add_argument('--data_type', default='drnet', help='speed up data loading 
 parser.add_argument('--device', dest='device', default='cpu', help='choose device to run')
 
 opt = parser.parse_args()
-name = 'content_model=%s-pose_model=%s-content_dim=%d-pose_dim=%d-max_step=%d-sd_weight=%.3f-lr=%.3f-sd_nf=%d-normalize=%s' % (
-    opt.content_model, opt.pose_model, opt.content_dim, opt.pose_dim, opt.max_step, opt.sd_weight, opt.lr, opt.sd_nf,
-    opt.normalize)
-opt.log_dir = '%s/%s%dx%d/%s' % (opt.log_dir, opt.dataset, opt.image_width, opt.image_width, name)
+name = f'content_model={opt.content_model}-'\
+           f'pose_model={opt.pose_model}-'\
+           f'content_dim={opt.content_dim}-'\
+           f'pose_dim={opt.pose_dim}-'\
+           f'max_step={opt.max_step}-'\
+           f'sd_weight={opt.sd_weight:.3f}-'\
+           f'lr={opt.lr:.3f}-'\
+           f'sd_nf={opt.sd_nf}-'\
+           f'normalize={opt.normalize}'
+opt.log_dir = f'{opt.log_dir}/{opt.dataset}{opt.image_width}x{opt.image_width}/niter{opt.niter}/epoch_size{opt.epoch_size}/{name}/'
 
-os.makedirs('%s/rec/' % opt.log_dir, exist_ok=True)
-os.makedirs('%s/analogy/' % opt.log_dir, exist_ok=True)
+os.makedirs(f'{opt.log_dir}/rec/', exist_ok=True)
+os.makedirs(f'{opt.log_dir}/analogy/', exist_ok=True)
 
 print(opt)
 
