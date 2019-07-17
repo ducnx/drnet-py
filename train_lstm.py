@@ -146,7 +146,7 @@ def plot_gen(x, epoch):
 
     lstm.hidden = lstm.init_hidden()
     gen_seq = []
-    h_p = netEP(x[0]).detach()
+    h_p = netEP(x[0]).detach().squeeze()
     gen_seq.append(x[0])
     for i in range(1, opt.n_past + opt.n_future):
         if i < opt.n_past:
