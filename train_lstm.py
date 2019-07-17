@@ -138,7 +138,7 @@ def plot_gen(x, epoch):
     # get fixed content vector from last ground truth frame
     h_c = netEC(x[opt.n_past - 1])
     if type(h_c) is tuple:
-        h_c[0] = h_c[0].squeeze()
+        h_c = h_c[0].squeeze(), h_c[1]
         vec_h_c = h_c[0].detach()
     else:
         h_c = h_c.squeeze()
