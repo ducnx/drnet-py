@@ -151,7 +151,7 @@ def plot_gen(x, epoch):
     for i in range(1, opt.n_past + opt.n_future):
         if i < opt.n_past:
             lstm(torch.cat([h_p, vec_h_c], 1))
-            h_p = netEP(x[i]).detach()
+            h_p = netEP(x[i]).detach().squeeze()
             gen_seq.append(x[i])
         else:
             h_p = lstm(torch.cat([h_p, vec_h_c], 1))
